@@ -20,10 +20,10 @@ app.use(express.static('public'));
 io.on('connection', (socket: Socket) => {
   console.log('A user connected:', socket.id);
 
-// // SMARTASTE ROOMHANTERINGEN
-//   var query = socket.handshake.query;
-//   var roomName = query.roomName as string;
-//   socket.join(roomName);
+// SMARTASTE ROOMHANTERINGEN
+   let query = socket.handshake.query;
+   let roomName = query.roomName as string;
+   socket.join(roomName);
 
   // Lägg till socketio message placeBid (namn, belopp)
 
@@ -33,7 +33,7 @@ io.on('connection', (socket: Socket) => {
   });
 });
 
-
+//när man anropar localhost:3000/api/auctions så körs denna
 app.get('/api/auctions', (req, res) => {
   res.json(data.auctions);
 });
