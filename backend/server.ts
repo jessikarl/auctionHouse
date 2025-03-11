@@ -7,6 +7,7 @@ import cors from 'cors';
 const app = express();
 app.use(cors())
 const server = http.createServer(app);
+//websocket server kan ex. ses som en telfonväxel
 const io = new Server(server,{
   cors:{
     origin: "*"

@@ -10,6 +10,15 @@ const socket:Socket = io('http://localhost:3000',{
   },
 });
 
+const btnPlaceBid = document.getElementById("btnPlaceBid") as HTMLButtonElement;
+btnPlaceBid.addEventListener("click", () => {
+  console.log("place bid");
+  //socket.emit skickar till server 
+  //tar två parametrar, namn på meddelandet och data
+  //vi hittar på namnet "placeBid"
+  //det viktiga är att servern hanterar meddelandet med samma namn 
+  socket.emit("placeBid", {name:"name", bid:100});
+})
 
 
 
