@@ -17,16 +17,21 @@ const io = new Server(server,{
 // Serve static files (frontend)
 app.use(express.static('public'));
 
+// SMARTASTE ROOMHANTERINGEN
+//let query = socket.handshake.query;
+//let roomName = query.roomName as string;
+//socket.join(roomName);
+
+// Lägg till socketio message placeBid (namn, belopp)
+
 // Socket.IO connection
 io.on('connection', (socket: Socket) => {
   console.log('A user connected:', socket.id);
 
-// SMARTASTE ROOMHANTERINGEN
-   let query = socket.handshake.query;
-   let roomName = query.roomName as string;
-   socket.join(roomName);
+  socket.on("placeBid", (d) => {
+    console.log("placeBid:", d.name, d.bid);
+  });
 
-  // Lägg till socketio message placeBid (namn, belopp)
 
   // Handle disconnection
   socket.on('disconnect', () => {
