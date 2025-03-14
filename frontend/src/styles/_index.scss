@@ -1,0 +1,50 @@
+@import "variables";
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: $light-gray;
+    color: $dark-gray;
+}
+
+section {
+    padding: 1rem;
+}
+
+h1 {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    font-size: 1.5rem;
+    color: $primary-color;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: white;
+
+  thead {
+    background-color: $primary-color;
+    color: white;
+  }
+
+  td {
+
+    padding: 0.75rem;
+    border: 1px solid $border-color;
+    text-align: left;
+  }
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  table {
+    width: 80%;
+    margin: 0 auto;
+  }
+}

@@ -22,20 +22,33 @@ io.on('connection', (socket: Socket) => {
   var roomName = query.roomName as string;
   socket.join(roomName);
 
-  const auction = data.auctions.find((auction:Auction) => auction.id === roomName) as Auction;
-  socket.emit('newBid', { 
+   const auction = data.auctions.find((auction: Auction) => auction.id === roomName) as Auction;
+   if (!auction) {
+     console.error("Auction with id ${roomName} not found");
+     socket.emit("error", { message: "Auction not found" });
+     return;
+   }
+
+  socket.emit("newBid", { 
     minprice: auction.minprice,
     name: auction.highestBidder, 
     bid: auction.highestBid });
 
-  socket.on('placeBid', (d) => {
-    const auction = data.auctions.find((auction:Auction) => auction.id === roomName) as Auction;
+  socket.on("placeBid", (d) => {
+    console.log("placeBid:", d.name, d.bid);
 
-    console.log('placeBid:', d.name, d.bid);
+    const auction = data.auctions.find((auction: Auction) => auction.id === roomName) as Auction;
+
+    if (!auction) {
+      console.error("Auction with id ${roomName} not found during bidding");
+      socket.emit("error", { message: "Auction not found" });
+      return;
+    }
+
     if (d.bid > auction.highestBid && d.bid > auction.minprice){ 
       auction.highestBid = d.bid;
       auction.highestBidder = d.name;
-      io.to(roomName).emit('newBid', { 
+      io.to(roomName).emit("newBid", { 
         minprice: auction.minprice,
         name: auction.highestBidder, bid: auction.highestBid });
     }else{
@@ -44,8 +57,8 @@ io.on('connection', (socket: Socket) => {
 
   });
 
-  socket.on('disconnect', () => {
-    console.log('A user disconnected:', socket.id);
+  socket.on("disconnect", () => {
+    console.log("A user disconnected:", socket.id);
   });
 });
 
@@ -62,6 +75,6 @@ app.get('/api/auctions/:id', (req, res) => {
 data.Init();
 const PORT = 3000;
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log("Server is running on http://localhost:${PORT}");
 });
 
