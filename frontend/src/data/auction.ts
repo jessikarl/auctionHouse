@@ -7,10 +7,3 @@ export class Auction{
         public minprice:number)
         {}
 }
-
-export class Bidder{
-    constructor(
-        public name: string,
-        public price: number
-    ){}
-}

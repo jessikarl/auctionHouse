@@ -3,43 +3,53 @@ import http from 'http';
 import { Server, Socket } from 'socket.io';
 import *  as data  from './data/database';
 import cors from 'cors';
+import { Auction } from './data/auction';
 
 const app = express();
 app.use(cors())
 const server = http.createServer(app);
-//websocket server kan ex. ses som en telfonväxel
 const io = new Server(server,{
   cors:{
     origin: "*"
   }
 });
 
-// Serve static files (frontend)
 app.use(express.static('public'));
 
-// SMARTASTE ROOMHANTERINGEN
-//let query = socket.handshake.query;
-//let roomName = query.roomName as string;
-//socket.join(roomName);
-
-// Lägg till socketio message placeBid (namn, belopp)
-
-// Socket.IO connection
 io.on('connection', (socket: Socket) => {
   console.log('A user connected:', socket.id);
+  var query = socket.handshake.query;
+  var roomName = query.roomName as string;
+  socket.join(roomName);
 
-  socket.on("placeBid", (d) => {
-    console.log("placeBid:", d.name, d.bid);
+  const auction = data.auctions.find((auction:Auction) => auction.id === roomName) as Auction;
+  socket.emit('newBid', { 
+    minprice: auction.minprice,
+    name: auction.highestBidder, 
+    bid: auction.highestBid });
+
+  socket.on('placeBid', (d) => {
+    const auction = data.auctions.find((auction:Auction) => auction.id === roomName) as Auction;
+
+    console.log('placeBid:', d.name, d.bid);
+    if (d.bid > auction.highestBid && d.bid > auction.minprice){ 
+      auction.highestBid = d.bid;
+      auction.highestBidder = d.name;
+      io.to(roomName).emit('newBid', { 
+        minprice: auction.minprice,
+        name: auction.highestBidder, bid: auction.highestBid });
+    }else{
+      socket.emit("Error: To low bid","To low bid");
+    }
+
   });
 
-
-  // Handle disconnection
   socket.on('disconnect', () => {
     console.log('A user disconnected:', socket.id);
   });
 });
 
-//när man anropar localhost:3000/api/auctions så körs denna
+
 app.get('/api/auctions', (req, res) => {
   res.json(data.auctions);
 });
@@ -49,7 +59,6 @@ app.get('/api/auctions/:id', (req, res) => {
 });
 
 
-// Start the server
 data.Init();
 const PORT = 3000;
 server.listen(PORT, () => {

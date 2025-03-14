@@ -3,13 +3,8 @@ export class Auction{
     constructor(
         public id:string, 
         public name:string, 
-        public minprice:number)
+        public minprice:number,
+        public highestBid:number, 
+        public highestBidder:string)
         {}
-}
-
-export class Bidder{
-    constructor(
-        public name: string,
-        public price: number
-    ){}
 }
